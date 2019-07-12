@@ -1,6 +1,6 @@
 # RIPA
-Raph's IPA is Pretty Awesome
-froked from
+Raph's IPA is Pretty Awesome  
+forked from  
 Illusion Plugin Architecture (Reloaded) - let's you inject code into Unity projects.
 
 ## How To Install
