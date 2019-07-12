@@ -11,7 +11,7 @@ namespace IllusionInjector
     {
         private CompositePlugin plugins;
         private bool quitting = false;
-        private StreamWriter log = File.AppendText(Path.Combine(Path.Combine(Environment.CurrentDirectory, "Logs"), $"{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")}.log"));
+        private Logging.IPALogger logger = new Logging.IPALogger();
 
         public static PluginComponent Create()
         {
@@ -20,14 +20,12 @@ namespace IllusionInjector
 
         void Awake()
         {
-            log.AutoFlush = true;
 #if DEBUG
-            // Console.WriteLine("Awake()");
-            log.WriteLine("Awake()");
+            logger.Debug("Awake()", "IPA");
 #endif
             DontDestroyOnLoad(gameObject);
 
-            plugins = new CompositePlugin(PluginManager.Plugins);
+            plugins = new CompositePlugin(PluginManager.GetPlugins(logger), logger);
             plugins.OnApplicationStart();
             
             SceneManager.activeSceneChanged += OnSceneChanged;
@@ -36,16 +34,12 @@ namespace IllusionInjector
         void Start()
         {
 #if DEBUG
-            // Console.WriteLine("Start()");
-            log.WriteLine("Start()");
+            logger.Debug("Start()", "IPA");
 #endif
         }
 
         void Update()
         {
-#if DEBUG
-            // Console.WriteLine("Update()");
-#endif
             plugins.OnUpdate();
         }
 
@@ -62,8 +56,7 @@ namespace IllusionInjector
         void OnDestroy()
         {
 #if DEBUG
-            // Console.WriteLine("OnDestroy()");
-            log.WriteLine("OnDestroy()");
+            logger.Debug("OnDestroy()", "IPA");
 #endif
 
             if (!quitting)
@@ -79,8 +72,7 @@ namespace IllusionInjector
         void OnApplicationQuit()
         {
 #if DEBUG
-            // Console.WriteLine("OnApplicationQuit()");
-            log.WriteLine("OnApplicationQuit()");
+            logger.Debug("OnApplicationQuit()", "IPA");
 #endif
             plugins.OnApplicationQuit();
 
@@ -90,8 +82,7 @@ namespace IllusionInjector
         void OnSceneChanged(Scene prev, Scene next)
         {
 #if DEBUG
-            // Console.WriteLine("OnSceneChanged({0}, {1})", prev.name, next.name);
-            log.WriteLine("OnSceneChanged({0}, {1})", prev.name, next.name);
+            logger.Debug($"OnSceneChanged({prev.name}, {next.name})", "IPA");
 #endif
             plugins.OnSceneChanged(prev, next);
         }

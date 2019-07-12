@@ -10,12 +10,14 @@ namespace IllusionInjector
     public class CompositePlugin : IPlugin
     {
         IEnumerable<IPlugin> plugins;
+        private Logging.IPALogger logger;
 
         private delegate void CompositeCall(IPlugin plugin);
 
-        public CompositePlugin(IEnumerable<IPlugin> plugins)
+        public CompositePlugin(IEnumerable<IPlugin> plugins, Logging.IPALogger logger)
         {
-            this.plugins = plugins;  
+            this.plugins = plugins;
+            this.logger = logger;
         }
 
         public void OnApplicationStart()
@@ -36,9 +38,9 @@ namespace IllusionInjector
                 {
                     plugin.OnSceneChanged(prev, next);
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    // Console.WriteLine("{0}: {1}", plugin.Name, ex);
+                    logger.Error($"{e}", plugin.Name);
                 }
             }
         }
@@ -52,9 +54,9 @@ namespace IllusionInjector
                 {
                     callback(plugin);
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    // Console.WriteLine("{0}: {1}", plugin.Name, ex);
+                    logger.Error($"{e}", plugin.Name);
                 }
             }
         }

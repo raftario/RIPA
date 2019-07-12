@@ -18,52 +18,44 @@ namespace IllusionInjector
         /// <summary>
         /// Gets the list of loaded plugins and loads them if necessary.
         /// </summary>
-        public static IEnumerable<IPlugin> Plugins
+        public static IEnumerable<IPlugin> GetPlugins(Logging.IPALogger logger)
         {
-            get
+            if(_Plugins == null)
             {
-                if(_Plugins == null)
-                {
-                    LoadPlugins();
-                }
-                return _Plugins;
+                LoadPlugins(logger);
             }
+            return _Plugins;
         }
 
 
-        private static void LoadPlugins()
+        private static void LoadPlugins(Logging.IPALogger logger)
         {
             string pluginDirectory = Path.Combine(Environment.CurrentDirectory, "Plugins");
 
             // Process.GetCurrentProcess().MainModule crashes the game and Assembly.GetEntryAssembly() is NULL,
             // so we need to resort to P/Invoke
             string exeName = Path.GetFileNameWithoutExtension(AppInfo.StartupPath);
-            // // Console.WriteLine(exeName);
+            logger.Debug(exeName, "IPA");
             _Plugins = new List<IPlugin>();
 
             if (!Directory.Exists(pluginDirectory)) return;
             
-            String[] files = Directory.GetFiles(pluginDirectory, "*.dll");
+            string[] files = Directory.GetFiles(pluginDirectory, "*.dll");
             foreach (var s in files)
             {
-                _Plugins.AddRange(LoadPluginsFromFile(Path.Combine(pluginDirectory, s), exeName));
+                _Plugins.AddRange(LoadPluginsFromFile(Path.Combine(pluginDirectory, s), exeName, logger));
             }
-            
 
             // DEBUG
-            // Console.WriteLine("Running on Unity {0}", UnityEngine.Application.unityVersion);
-            // Console.WriteLine("-----------------------------");
-            // Console.WriteLine("Loading plugins from {0} and found {1}", pluginDirectory, _Plugins.Count);
-            // Console.WriteLine("-----------------------------");
+            logger.Debug($"Running on Unity {UnityEngine.Application.unityVersion}", "IPA");
+            logger.Debug($"Loading plugins from {pluginDirectory} and found {_Plugins.Count}", "IPA");
             foreach (var plugin in _Plugins)
             {
-
-                // Console.WriteLine(" {0}: {1}", plugin.Name, plugin.Version);
+                logger.Debug($"{plugin.Name}: {plugin.Version}", "IPA");
             }
-            // Console.WriteLine("-----------------------------");
         }
 
-        private static IEnumerable<IPlugin> LoadPluginsFromFile(string file, string exeName)
+        private static IEnumerable<IPlugin> LoadPluginsFromFile(string file, string exeName, Logging.IPALogger logger)
         {
             List<IPlugin> plugins = new List<IPlugin>();
 
@@ -94,7 +86,7 @@ namespace IllusionInjector
                         }
                         catch (Exception e)
                         {
-                            // Console.WriteLine("[WARN] Could not load plugin {0} in {1}! {2}", t.FullName, Path.GetFileName(file), e);
+                            logger.Warning($"Could not load plugin {t.FullName} in {Path.GetFileName(file)}. {e}", "IPA");
                         }
                     }
                 }
@@ -102,7 +94,7 @@ namespace IllusionInjector
             }
             catch (Exception e)
             {
-                // Console.WriteLine("[ERROR] Could not load {0}! {1}", Path.GetFileName(file), e);
+                logger.Error($"Could not load {Path.GetFileName(file)}. {e}", "IPA");
             }
 
             return plugins;
