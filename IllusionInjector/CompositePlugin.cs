@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace IllusionInjector
 {
@@ -27,17 +28,17 @@ namespace IllusionInjector
             Invoke(plugin =>  plugin.OnApplicationQuit());
         }
 
-        public void OnLevelWasLoaded(int level)
+        public void OnSceneChanged(Scene prev, Scene next)
         {
             foreach (var plugin in plugins)
             {
                 try
                 {
-                    plugin.OnLevelWasLoaded(level);
+                    plugin.OnSceneChanged(prev, next);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("{0}: {1}", plugin.Name, ex);
+                    // Console.WriteLine("{0}: {1}", plugin.Name, ex);
                 }
             }
         }
@@ -53,28 +54,11 @@ namespace IllusionInjector
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("{0}: {1}", plugin.Name, ex);
+                    // Console.WriteLine("{0}: {1}", plugin.Name, ex);
                 }
             }
         }
-
-
-
-        public void OnLevelWasInitialized(int level)
-        {
-            foreach (var plugin in plugins)
-            {
-                try
-                {
-                    plugin.OnLevelWasInitialized(level);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("{0}: {1}", plugin.Name, ex);
-                }
-            }
-        }
-
+  
 
         public void OnUpdate()
         {

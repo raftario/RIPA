@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace IllusionPlugin
 {
@@ -32,16 +34,10 @@ namespace IllusionPlugin
         void OnApplicationQuit();
 
         /// <summary>
-        /// Gets invoked whenever a level is loaded.
+        /// Gets invoked whenever the active scene changes.
         /// </summary>
         /// <param name="level"></param>
-        void OnLevelWasLoaded(int level);
-
-        /// <summary>
-        /// Gets invoked after the first update cycle after a level was loaded.
-        /// </summary>
-        /// <param name="level"></param>
-        void OnLevelWasInitialized(int level);
+        void OnSceneChanged(Scene prev, Scene next);
 
         /// <summary>
         /// Gets invoked on every graphic update.

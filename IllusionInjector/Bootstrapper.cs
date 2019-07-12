@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,14 +10,6 @@ namespace IllusionInjector
     class Bootstrapper : MonoBehaviour
     {
         public event Action Destroyed = delegate {};
-        
-        void Awake()
-        {
-            if (Environment.CommandLine.Contains("--verbose") && !Screen.fullScreen)
-            {
-                Windows.GuiConsole.CreateConsole();
-            }
-        }
 
         void Start()
         {

@@ -12,7 +12,6 @@ using System.Windows.Forms;
 
 namespace IPA
 {
-  
     public class Program
     {
         public enum Architecture {
@@ -52,7 +51,6 @@ namespace IPA
 
         private static void Validate(PatchContext c)
         {
-            if (!File.Exists(c.LauncherPathSrc)) Fail("Couldn't find DLLs! Make sure you extracted all contents of the release archive.");
             if (!Directory.Exists(c.DataPathDst) || !File.Exists(c.EngineFile))
             {
                 Fail("Game does not seem to be a Unity project. Could not find the libraries to patch.");
@@ -85,6 +83,12 @@ namespace IPA
                     Directory.CreateDirectory(context.PluginsFolder);
                 }
 
+                if (!Directory.Exists(context.LogsFolder))
+                {
+                    Console.WriteLine("Creating logs folder... ");
+                    Directory.CreateDirectory(context.LogsFolder);
+                }
+
                 // Patching
                 var patchedModule = PatchedModule.Load(context.EngineFile);
                 if (!patchedModule.IsPatched)
@@ -105,28 +109,6 @@ namespace IPA
                         backup.Add(context.AssemblyFile);
                         virtualizedModule.Virtualize();
                         Console.WriteLine("Done!");
-                    }
-                }
-
-                // Creating shortcut
-                if(!File.Exists(context.ShortcutPath))
-                {
-                    Console.Write("Creating shortcut to IPA ({0})... ",  context.IPA);
-                    try
-                    {
-                        Shortcut.Create(
-                            fileName: context.ShortcutPath,
-                            targetPath: context.IPA,
-                            arguments: Args(context.Executable, "--launch"),
-                            workingDirectory: context.ProjectRoot,
-                            description: "Launches the game and makes sure it's in a patched state",
-                            hotkey: "",
-                            iconPath: context.Executable
-                        );
-                        Console.WriteLine("Created");
-                    } catch (Exception e)
-                    {
-                        Console.Error.WriteLine("Failed to create shortcut, but game was patched!");
                     }
                 }
             }
@@ -153,12 +135,6 @@ namespace IPA
                 Console.WriteLine("Already vanilla!");
             }
 
-           
-            if (File.Exists(context.ShortcutPath))
-            {
-                Console.WriteLine("Deleting shortcut...");
-                File.Delete(context.ShortcutPath);
-            }
 
             Console.WriteLine("");
             Console.WriteLine("--- Done reverting ---");

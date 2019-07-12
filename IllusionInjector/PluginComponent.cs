@@ -1,41 +1,51 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace IllusionInjector
 {
     public class PluginComponent : MonoBehaviour
     {
         private CompositePlugin plugins;
-        private bool freshlyLoaded = false;
         private bool quitting = false;
+        private StreamWriter log = File.AppendText(Path.Combine(Path.Combine(Environment.CurrentDirectory, "Logs"), $"{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")}.log"));
 
         public static PluginComponent Create()
         {
-            return new GameObject("IPA_PluginManager").AddComponent<PluginComponent>();
+            return new GameObject("IPAPluginManager").AddComponent<PluginComponent>();
         }
 
         void Awake()
         {
+            log.AutoFlush = true;
+#if DEBUG
+            // Console.WriteLine("Awake()");
+            log.WriteLine("Awake()");
+#endif
             DontDestroyOnLoad(gameObject);
 
             plugins = new CompositePlugin(PluginManager.Plugins);
             plugins.OnApplicationStart();
+            
+            SceneManager.activeSceneChanged += OnSceneChanged;
         }
 
         void Start()
         {
-            OnLevelWasLoaded(Application.loadedLevel);
+#if DEBUG
+            // Console.WriteLine("Start()");
+            log.WriteLine("Start()");
+#endif
         }
 
         void Update()
         {
-            if (freshlyLoaded)
-            {
-                freshlyLoaded = false;
-                plugins.OnLevelWasInitialized(Application.loadedLevel);
-            }
+#if DEBUG
+            // Console.WriteLine("Update()");
+#endif
             plugins.OnUpdate();
         }
 
@@ -51,23 +61,39 @@ namespace IllusionInjector
 
         void OnDestroy()
         {
+#if DEBUG
+            // Console.WriteLine("OnDestroy()");
+            log.WriteLine("OnDestroy()");
+#endif
+
             if (!quitting)
             {
-                Create();
+                Create().enabled = true;
+            }
+            else
+            {
+                SceneManager.activeSceneChanged -= OnSceneChanged;
             }
         }
         
         void OnApplicationQuit()
         {
+#if DEBUG
+            // Console.WriteLine("OnApplicationQuit()");
+            log.WriteLine("OnApplicationQuit()");
+#endif
             plugins.OnApplicationQuit();
 
             quitting = true;
         }
 
-        void OnLevelWasLoaded(int level)
+        void OnSceneChanged(Scene prev, Scene next)
         {
-            plugins.OnLevelWasLoaded(level);
-            freshlyLoaded = true;
+#if DEBUG
+            // Console.WriteLine("OnSceneChanged({0}, {1})", prev.name, next.name);
+            log.WriteLine("OnSceneChanged({0}, {1})", prev.name, next.name);
+#endif
+            plugins.OnSceneChanged(prev, next);
         }
 
     }
