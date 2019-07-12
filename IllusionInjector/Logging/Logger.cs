@@ -4,35 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using IllusionPlugin.Logging;
 
 namespace IllusionInjector.Logging
 {
-    /// <summary>
-    /// Levels (types) of log for the logger.
-    /// </summary>
-    public enum LogLevel
-    {
-        /// <summary>
-        /// A debug message.
-        /// </summary>
-        Debug,
-        /// <summary>
-        /// An important message.
-        /// </summary>
-        Notice,
-        /// <summary>
-        /// A warning message from something that didn't cause an error but might cause one.
-        /// </summary>
-        Warning,
-        /// <summary>
-        /// An error message.
-        /// </summary>
-        Error
-    }
-
-    /// <summary>
-    /// Public class providing logging functions
-    /// </summary>
     public class IPALogger
     {
         private readonly DateTime created = DateTime.Now;
@@ -67,13 +42,7 @@ namespace IllusionInjector.Logging
         {
             Log(level, message, "UnityEngine");
         }
-
-        /// <summary>
-        /// Logs a message.
-        /// </summary>
-        /// <param name="level">Log level (type)</param>
-        /// <param name="message">Log message (content)</param>
-        /// <param name="sender">Log sender (name)</param>
+        
         public void Log(LogLevel level, string message, string sender)
         {
             var sent = DateTime.Now;
@@ -89,34 +58,22 @@ namespace IllusionInjector.Logging
                 logFile.WriteLine($"[{sentString}][{typeString}][{sender}] {message}");
             }
         }
-
-        /// <summary>
-        /// Shortcut for Logger.Log(LogLevel.Debug, ...)
-        /// </summary>
+        
         public void Debug(string message, string sender)
         {
             Log(LogLevel.Debug, message, sender);
         }
-
-        /// <summary>
-        /// Shortcut for Logger.Log(LogLevel.Notice, ...)
-        /// </summary>
+        
         public void Notice(string message, string sender)
         {
             Log(LogLevel.Notice, message, sender);
         }
-
-        /// <summary>
-        /// Shortcut for Logger.Log(LogLevel.Warning, ...)
-        /// </summary>
+        
         public void Warning(string message, string sender)
         {
             Log(LogLevel.Warning, message, sender);
         }
-
-        /// <summary>
-        /// Shortcut for Logger.Log(LogLevel.Error, ...)
-        /// </summary>
+        
         public void Error(string message, string sender)
         {
             Log(LogLevel.Error, message, sender);

@@ -97,6 +97,10 @@
     <ItemGroup>
       <Dlls Include="$(SolutionDir)IllusionInjector\$(OutDir)**\*" />
     </ItemGroup>
+    <ItemGroup>
+      <Useless Include="$(OutputPath)IPA\Data\Managed\UnityEngine.CoreModule.dll" />
+    </ItemGroup>
     <Copy SourceFiles="@(Dlls)" DestinationFolder="$(OutputPath)IPA\Data\Managed" />
+    <Delete Files="@(Useless)" />
   </Target>
 </Project>

@@ -45,6 +45,8 @@
     <Compile Include="Config\IniFile.cs" />
     <Compile Include="Interfaces\IPlugin.cs" />
     <Compile Include="Config\ModPrefs.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Logging\PluginLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

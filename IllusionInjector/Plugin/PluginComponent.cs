@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using IllusionPlugin.Logging;
 
 namespace IllusionInjector
 {
@@ -12,6 +13,7 @@ namespace IllusionInjector
         private CompositePlugin plugins;
         private bool quitting = false;
         private Logging.IPALogger logger = new Logging.IPALogger();
+        private PluginLogger[] pluginLoggers;
 
         public static PluginComponent Create()
         {
@@ -27,6 +29,12 @@ namespace IllusionInjector
 
             plugins = new CompositePlugin(PluginManager.GetPlugins(logger), logger);
             plugins.OnApplicationStart();
+
+            pluginLoggers = FindObjectsOfType<PluginLogger>();
+            foreach (PluginLogger pluginLogger in pluginLoggers)
+            {
+                pluginLogger.Message += logger.Log;
+            }
             
             SceneManager.activeSceneChanged += OnSceneChanged;
         }
@@ -66,6 +74,10 @@ namespace IllusionInjector
             else
             {
                 SceneManager.activeSceneChanged -= OnSceneChanged;
+                foreach (PluginLogger pl in pluginLoggers)
+                {
+                    pl.Message -= logger.Log;
+                }
             }
         }
         
