@@ -36,7 +36,8 @@ namespace IllusionPlugin
         /// <summary>
         /// Gets invoked whenever the active scene changes.
         /// </summary>
-        /// <param name="level"></param>
+        /// <param name="prev">Previous scene</param>
+        /// <param name="next">Next scene</param>
         void OnSceneChanged(Scene prev, Scene next);
 
         /// <summary>
